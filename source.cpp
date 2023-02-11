@@ -12,6 +12,10 @@ Spreadsheet::Spreadsheet(int row, int column) {
   }
 }
 
+void Spreadsheet::setCellAt(int r, int c,const Cell& cl) {
+
+}
+
 Spreadsheet::~Spreadsheet() {
 }
 
