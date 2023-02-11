@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/cod_republic_lab/lesson",
-      "program": "/Users/cod_republic_lab/lesson/build/Debug/outDebug"
+      "cwd": "/Users/cod_republic_lab/Dropbox/Mac/Desktop/SpredsheetCell/SpreadsheetCell",
+      "program": "/Users/cod_republic_lab/Dropbox/Mac/Desktop/SpredsheetCell/SpreadsheetCell/build/Debug/outDebug"
     }
   ]
 }

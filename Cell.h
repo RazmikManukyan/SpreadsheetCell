@@ -12,7 +12,7 @@ public:
   Cell();
   ~Cell();
 
-  void setValue(const std::string& v);
+  void setValue(const std::string&);
   std::string getValue();
   int toInt();
   double toDouble();

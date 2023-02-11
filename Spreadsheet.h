@@ -8,8 +8,13 @@ class Spreadsheet {
 private:
   Cell** m_cell;
 public: 
-  Spreadsheet(int , int);
+  Spreadsheet(int , int, const Cell&);
+  Spreadsheet(const Spreadsheet&);
+  Spreadsheet(Spreadsheet&&) noexcept;
   ~Spreadsheet();
+
+  Spreadsheet& operator=(const Spreadsheet&);
+  Spreadsheet& operator=(Spreadsheet&&) noexcept;
 
   void setCellAt(int r, int c,const Cell& cl);
   void setCellAt(int r, int c,const std::string& cl);
