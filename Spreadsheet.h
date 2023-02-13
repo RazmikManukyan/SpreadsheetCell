@@ -5,16 +5,27 @@
 
 
 class Spreadsheet {
-private:
-  Cell** m_cell;
 public: 
-  Spreadsheet(int , int, const Cell&);
+  Spreadsheet(int row, int column)
+  :m_row(row)
+  ,m_column(column) {
+    m_cell = new Cell*[m_row];
+    for(int i = 0; i < m_row; ++i) {
+      m_cell[i] = new Cell[m_column];
+    }
+  };
   Spreadsheet(const Spreadsheet&);
-  Spreadsheet(Spreadsheet&&) noexcept;
-  ~Spreadsheet();
+  //Spreadsheet(Spreadsheet&&);
+  ~Spreadsheet() {
+    for (int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = nullptr;
+  };
 
   Spreadsheet& operator=(const Spreadsheet&);
-  Spreadsheet& operator=(Spreadsheet&&) noexcept;
+  //Spreadsheet& operator=(Spreadsheet&&);
 
   void setCellAt(int r, int c,const Cell& cl);
   void setCellAt(int r, int c,const std::string& cl);
@@ -25,6 +36,13 @@ public:
   void removeColumn(int c);
   void swapRow(int r1, int r2);
   void swapColumn(int c1, int c2);
+  void cleanup();
+  void print();
+private:
+  Cell** m_cell = nullptr;
+  int m_row = 0;
+  int m_column = 0;
+  bool inRange (int, int) const;
 };
 
 #endif

@@ -3,6 +3,15 @@
 #include "Cell.h"
 #include "Date.h"
 
+Cell::Cell(const Cell& oth) 
+:m_value(oth.m_value)
+,m_color(oth.m_color)
+{}
+
+Cell::Cell(std::string str, Color c) {
+  m_value = str;
+  m_color = c;
+}
 
 void Cell::setValue(const std::string& str) {
   m_value = str;
@@ -20,7 +29,7 @@ double Cell::toDouble() {
   return stod(this->m_value);
 }
 
-Date Cell::toDate() {
+void Cell::reset() {
+  m_value = "";
 }
-
 
