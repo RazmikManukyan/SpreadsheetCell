@@ -3,12 +3,15 @@
 #include <string>
 #include "Date.h"
 
-enum class Color {read, blue, green};
+enum class Color {read, blue, green, white};
 
 
 class Cell {
 public:
-  Cell();
+  Cell() 
+  :m_value(" ")
+  ,m_color(Color::white)
+  {}
   Cell(std::string, Color);
   Cell(const Cell&);
   

@@ -2,17 +2,28 @@
 #include "Cell.h"
 #include "Spreadsheet.h"
 
-void Spreadsheet::print() {
-    for(int i = 0; i < m_row; ++i) {
-      for(int j = 0; j < m_column; ++j) {
-        std::cout << m_cell[i][j].getValue() << " ";
-      }
-      std::cout << std::endl;
-    }
+Spreadsheet::Spreadsheet(int row, int column) 
+:m_row(row)
+,m_column(column) 
+{
+  m_cell = new Cell*[m_row];
+  for(int i = 0; i < m_row; ++i) {
+    m_cell[i] = new Cell[m_column];
   }
+};
+
+void Spreadsheet::print() {
+  for(int i = 0; i < m_row; ++i) {
+    for(int j = 0; j < m_column; ++j) {
+      std::cout << m_cell[i][j].getValue() << " ";
+    }
+    std::cout << std::endl;
+  }
+}
 
 Spreadsheet::Spreadsheet(const Spreadsheet& oth) 
-:m_row(oth.m_row), m_column(oth.m_column)
+:m_row(oth.m_row)
+,m_column(oth.m_column)
 {
   for(int i = 0; i < m_row; ++i) {
     for(int j = 0; j < m_column; ++j) {
@@ -82,7 +93,7 @@ Cell Spreadsheet::getCellAt(int r, int c) {
   return m_cell[r][c];
 }
 
-void Spreadsheet::cleanup() noexcept{
+void Spreadsheet::cleanup() {
   for(int i {0}; i < m_row; ++i) {
     delete[] m_cell[i];
   }
@@ -92,65 +103,284 @@ void Spreadsheet::cleanup() noexcept{
 
 void Spreadsheet::addRow(int r) {
   if(r < 0 && r >= m_row) {
-    throw "Invaild argument";
+    throw std::invalid_argument("Invalid argument");
   }
 
   if(r == 0) {
     Cell** tmp = new Cell*[m_row + 1];
-    for(int i = 0; i < m_column; ++i) {
+    for(int i = 0; i < m_row + 1; ++i) {
       tmp[i] = new Cell[m_column];
     }
     
-    for(int i = 0; i < m_row; ++i) {
-      for(int j = 0; i < m_column; ++j) {
-        tmp[i + 1][j] = m_cell[i][j];
+    for(int j = 0; j < m_column; ++j) {
+      tmp[0][j] = Cell("0", Color::white);
+    }
+    
+    for(int i = 1; i < m_row + 1; ++i) {
+      for(int j = 0; j < m_column; ++j) {
+        tmp[i][j] = m_cell[i - 1][j];
       } 
     }
 
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
     m_row += 1;
+
+  }
+
+  if (r > 0 && r < m_row) {
+    Cell** tmp = new Cell*[m_row + 1];
+    for (int i = 0; i < m_row + 1; ++i) {
+      tmp[i] = new Cell[m_column];
+    }
+
+    for (int i = 0; i < r; ++i) {
+      for (int j = 0; j < m_column; ++j) {
+        tmp[i][j] = m_cell[i][j];
+      }
+    }
+
+    for (int j = 0; j < m_column; ++j) {
+      tmp[r][j] = Cell("0", Color::white);
+    }
+
+    for (int i = r + 1; i < m_row + 1; ++i) {
+      for (int j = 0; j < m_column; ++j) {
+        tmp[i][j] = m_cell[i - 1][j]; 
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
     m_cell = tmp;
     tmp = nullptr;
+    m_row += 1;
+  }
+
+  if(r == m_row) {
+    Cell** tmp = new Cell*[m_row + 1];
+    for(int i = 0; i < m_row + 1; ++i) {
+      tmp[i] = new Cell[m_column];
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      for(int j = 0; j < m_column; ++j) {
+        tmp[i][j] = m_cell[i][j];
+      }
+    }
+    
+    for(int j = 0; j < m_column; ++j) {
+      tmp[r][j] = Cell("0", Color::white);
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    tmp = nullptr;
+    m_row += 1;
+  }
+}
+
+void Spreadsheet::removeRow(int r) {
+  if(r < 0 && r >= m_row) {
+    throw std::invalid_argument("Invalid argument");
+  }
+
+  if(r == 0) {
+    Cell** tmp = new Cell*[m_row - 1];
+    for(int i = 0; i < m_row - 1; ++i) {
+      tmp[i] = new Cell[m_column];
+    }
+
+    for(int i = 1; i < m_row; ++i) {
+      for(int j = 0; j < m_column; ++j) {
+        tmp[i - 1][j] = m_cell[i][j];
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    m_row -= 1;
   }
 
   if(r > 0 && r < m_row) {
-    Cell** tmp = new Cell*[m_row + 1];
-    for(int i = 0; i < m_column; ++i) {
+    Cell** tmp = new Cell*[m_row - 1];
+    for(int i = 0; i < m_row - 1; ++i) {
       tmp[i] = new Cell[m_column];
     }
 
     for(int i = 0; i < r; ++i) {
-      for(int j = 0; i < m_column; ++j){
+      for(int j = 0; j < m_column; ++j) {
         tmp[i][j] = m_cell[i][j];
       }
     }
 
-    for(int i = r; i < m_row; ++i) {
+    for(int i = r + 1; i < m_row; ++i) {
       for(int j = 0; j < m_column; ++j) {
-        tmp[i + 1][j] = m_cell[i][j]; 
+        tmp[i - 1][j] = m_cell[i][j];
       }
-    }
-
-    m_row += 1;
-    m_cell = tmp;
-    tmp = nullptr;
-  }
-
-  if(r == m_row - 1) {
-    Cell** tmp = new Cell*[m_row + 1];
-    for(int i = 0; i < m_column; ++i) {
-      tmp[i] = new Cell[m_column];
     }
 
     for(int i = 0; i < m_row; ++i) {
-      for(int j = 0; i < m_column; ++j) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    m_row -= 1;
+  }
+
+  if(r == m_row) {
+    Cell** tmp = new Cell*[m_row - 1];
+    for(int i = 0; i < m_row - 1; ++i) {
+      tmp[i] = new Cell[m_column];
+    }
+
+    for(int i = 0; i < m_row - 1; ++i) {
+      for(int j = 0; j < m_column; ++j) {
         tmp[i][j] = m_cell[i][j];
       }
     }
 
-    m_row += 1;
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
     m_cell = tmp;
-    tmp = nullptr;
-    
+    m_row -= 1;
   }
 
 }
+
+void Spreadsheet::addColumn(int c) {
+  if(c < 0 && c >= m_row) {
+    throw std::invalid_argument("Invalid argument");
+  }
+
+  Cell** tmp = new Cell*[m_row];
+    for(int i = 0; i < m_row; ++i) {
+      tmp[i] = new Cell[m_column + 1];
+    } 
+
+  for(int i = 0; i < m_row; ++i) {
+    for(int j = 0; j < m_column; ++j) {
+      if(j < c) {
+        tmp[i][j] = m_cell[i][j];
+      } else {
+        tmp[i][j + 1] = m_cell[i][j];
+      }
+    }
+  }
+
+  for(int i = 0; i < m_row; ++i) {
+    tmp[i][c] = Cell("0", Color::white);
+  }
+
+  if(c == m_column) {
+    for(int i = 0; i < m_row; ++i) {
+      tmp[i][c] = Cell("0", Color::white);
+    }
+  }
+
+  for(int i = 0; i < m_row; ++i) {
+    delete[] m_cell[i];
+  }
+  delete[] m_cell;
+  m_cell = tmp;
+  tmp = nullptr;
+  m_column += 1;
+}
+
+void Spreadsheet::removeColumn(int c) {
+  if(c < 0 && c >= m_row) {
+    throw std::invalid_argument("Invalid argument");
+  }
+
+  if(c == 0) {
+    Cell** tmp = new Cell*[m_row];
+    for(int i = 0; i < m_row; ++i) {
+      tmp[i] = new Cell[m_column - 1];
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      for(int j = 1; j < m_column; ++j) {
+        tmp[i][j - 1] = m_cell[i][j];
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    m_column -= 1;
+  }
+
+  if(c > 0 && c < m_column) {
+    Cell** tmp = new Cell*[m_row];
+    for(int i = 0; i < m_row; ++i) {
+      tmp[i] = new Cell[m_column - 1];
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      for(int j = 0; j < c; ++j) {
+        tmp[i][j] = m_cell[i][j];
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      for(int j = c + 1; j < m_column; ++j) {
+        tmp[i][j - 1] = m_cell[i][j];
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    m_column -= 1;
+  }
+
+  if(c == m_column) {
+    Cell** tmp = new Cell*[m_row];
+    for(int i = 0; i < m_row; ++i) {
+      tmp[i] = new Cell[m_column - 1];
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      for(int j = 0; j < m_column - 1; ++j) {
+        tmp[i][j] = m_cell[i][j];
+      }
+    }
+
+    for(int i = 0; i < m_row; ++i) {
+      delete[] m_cell[i];
+    }
+    delete[] m_cell;
+    m_cell = tmp;
+    m_column -= 1;
+  }
+}
+
+void Spreadsheet::swapRow(int r1, int r2) {
+  for(int i = 0; i < m_column; ++i) {
+    std::swap(m_cell[r1], m_cell[r2]);
+  }
+}
+
+void Spreadsheet::swapColumn(int c1, int c2) {
+  for(int i = 0; i < m_row; ++i) {
+    std::swap(m_cell[i][c1], m_cell[i][c2]);
+  }
+}
+

@@ -6,14 +6,7 @@
 
 class Spreadsheet {
 public: 
-  Spreadsheet(int row, int column)
-  :m_row(row)
-  ,m_column(column) {
-    m_cell = new Cell*[m_row];
-    for(int i = 0; i < m_row; ++i) {
-      m_cell[i] = new Cell[m_column];
-    }
-  };
+  Spreadsheet(int, int);
   Spreadsheet(const Spreadsheet&);
   //Spreadsheet(Spreadsheet&&);
   ~Spreadsheet() {

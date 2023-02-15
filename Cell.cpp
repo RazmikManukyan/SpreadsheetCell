@@ -3,6 +3,7 @@
 #include "Cell.h"
 #include "Date.h"
 
+
 Cell::Cell(const Cell& oth) 
 :m_value(oth.m_value)
 ,m_color(oth.m_color)
